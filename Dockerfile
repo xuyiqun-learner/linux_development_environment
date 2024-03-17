@@ -19,7 +19,7 @@ RUN sed -i "s@http://\(security\|archive\).ubuntu.com@[arch=amd64] http://mirror
     ## install cross compile arm64 dependencies'libraries
     dpkg --add-architecture arm64 && \
     apt update && \
-    apt install -y vim:amd64 htop:amd64 gcc-aarch64-linux-gnu:amd64 g++-aarch64-linux-gnu:amd64 python3-pip:amd64 pkgconfig:amd64
+    apt install -y vim:amd64 htop:amd64 gcc-aarch64-linux-gnu:amd64 g++-aarch64-linux-gnu:amd64 python3-pip:amd64 pkg-config:amd64
 
 COPY cross-compile-configure.cmake colcon_build.sh entrypoint.sh /tmp/
 # CMD [ "bash" ]
