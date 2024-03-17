@@ -14,13 +14,26 @@ RUN addgroup --gid $GID $USER && \
 
 COPY arm64-cross-compile-sources.list /etc/apt/sources.list.d
     ## replace official sources.list and ros2-latest.list
+WORKDIR /tmp
 RUN sed -i "s@http://\(security\|archive\).ubuntu.com@[arch=amd64] http://mirrors.cloud.tencent.com@g" /etc/apt/sources.list && \
     sed -i "s@http://packages.ros.org@http://mirrors.cloud.tencent.com@g" /etc/apt/sources.list.d/ros2-latest.list && \
     ## install cross compile arm64 dependencies'libraries
     dpkg --add-architecture arm64 && \
     apt update && \
-    apt install -y vim:amd64 htop:amd64 gcc-aarch64-linux-gnu:amd64 g++-aarch64-linux-gnu:amd64 python3-pip:amd64 pkg-config:amd64
+    apt install -y vim:amd64 htop:amd64 gcc-aarch64-linux-gnu:amd64 g++-aarch64-linux-gnu:amd64 python3-pip:amd64 pkg-config:amd64 extract:amd64
+    ## install navigation2 dependencies
 
-COPY cross-compile-configure.cmake colcon_build.sh entrypoint.sh /tmp/
-# CMD [ "bash" ]
+RUN apt update && \
+    apt install -y libpython3.10-dev:arm64 python3-dev:amd64 ros-humble-rosidl-default-generators:amd64 libspdlog-dev:arm64 \
+    ros-humble-geometry-msgs:arm64
+
+    ## install pythonlibs
+    # wget http://ports.ubuntu.com/pool/universe/r/ros-catkin-pkg/python3-catkin-pkg_0.4.16-1_all.deb && \
+    
+    # apt install -fy ./python3-catkin-pkg_0.4.16-1_all.deb --allow-downgrades && \
+    # apt install -y ros-humble-ament-cmake-core:amd64
+
+COPY --chown=$USER:$USER cross-compile-configure.cmake colcon_build.sh entrypoint.sh /tmp/
+
 ENTRYPOINT [ "/tmp/entrypoint.sh" ]
+CMD [ "/bin/bash" ]
